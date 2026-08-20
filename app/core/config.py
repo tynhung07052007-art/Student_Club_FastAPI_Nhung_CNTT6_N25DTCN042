@@ -1,71 +1,44 @@
-# from pydantic_settings import BaseSettings
-
-
-# class Settings(BaseSettings):
-#     # --- Cấu hình ứng dụng ---
-#     APP_NAME: str = "Demo FastAPI"
-#     APP_VERSION: str = "1.0.0"
-#     APP_DESCRIPTION: str = "Ứng dụng mẫu Authentication & Authorization với FastAPI."
-
-#     # --- Cấu hình Database ---
-#     # Đọc từ biến môi trường DATABASE_URL trong file .env
-#     DATABASE_URL: str
-
-#     # --- Cấu hình JWT ---
-#     # Đọc từ biến môi trường SECRET_KEY trong file .env
-#     SECRET_KEY: str
-#     ALGORITHM: str = "HS256"
-#     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
-
-#     # --- Cấu hình CORS ---
-#     # Đọc từ biến môi trường ALLOWED_ORIGINS trong file .env (dạng JSON list)
-#     ALLOWED_ORIGINS: list[str] = ["http://localhost:3000", "http://localhost:5173"]
-
-#     class Config:
-#         # Chỉ định file .env để pydantic-settings tự động đọc
-#         env_file = ".env"
-#         env_file_encoding = "utf-8"
-
-
-# # Khởi tạo một instance duy nhất (Singleton) dùng cho toàn bộ ứng dụng
-# # Các file khác chỉ cần: from app.core.config import settings
-# settings = Settings()
-
-from pydantic_settings import BaseSettings
-
+from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     # ============================================================
-    # SỬA: Cấu hình tên project Student Club Management
+    #  Cấu hình thông tin project
     # ============================================================
     APP_NAME: str = "Student Club Management API"
     APP_VERSION: str = "1.0.0"
     APP_DESCRIPTION: str = "API quản lý câu lạc bộ sinh viên"
-
     # ============================================================
-    # GIỮ: Đọc DATABASE_URL từ file .env
+    #  Cấu hình kết nối MySQL
+    # DATABASE_URL được đọc từ file .env
     # ============================================================
     DATABASE_URL: str
-
     # ============================================================
-    # GIỮ: Cấu hình JWT
+    #  Cấu hình JWT
+    # Chưa làm Login ở Task 1 nhưng chuẩn bị cấu hình
+    # theo đúng đặc tả của project.
     # ============================================================
     SECRET_KEY: str
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60
 
     # ============================================================
-    # THÊM: Cho phép cấu hình CORS từ .env
+    #  Cấu hình CORS
     # ============================================================
     ALLOWED_ORIGINS: list[str] = [
         "http://localhost:3000",
         "http://localhost:5173"
     ]
-
-    class Config:
-        # GIỮ: Đọc cấu hình từ file .env
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-
-
-# GIỮ: Tạo một settings dùng chung cho toàn project
+    # ============================================================
+    # Pydantic Settings V2 sử dụng SettingsConfigDict
+    # để đọc file .env.
+    # ============================================================
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore"
+    )
+# ============================================================
+# Tạo một settings dùng chung toàn project.
+# Các file khác chỉ cần:
+# from app.core.config import settings
+# ============================================================
 settings = Settings()
