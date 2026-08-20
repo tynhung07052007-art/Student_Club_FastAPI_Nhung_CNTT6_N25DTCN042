@@ -1,91 +1,71 @@
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey
-from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
+from sqlalchemy import Column, DateTime, ForeignKey, Integer, String, Text
+from sqlalchemy.orm import relationship
 from app.db.database import Base
 
-
 class ClubActivity(Base):
+    # ============================================================
+    #  Bảng club_activities
+    # ============================================================
     __tablename__ = "club_activities"
 
     # ============================================================
-    # THÊM: Khóa chính hoạt động
+    # TASK 1 - Khóa chính
     # ============================================================
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer,primary_key=True,index=True)
 
     # ============================================================
-    # THÊM: Hoạt động thuộc Club nào
+    # TASK 1 - Hoạt động thuộc Club nào
+    # FK -> clubs.id
     # ============================================================
-    club_id = Column(
-        Integer,
-        ForeignKey("clubs.id"),
-        nullable=False
-    )
+    club_id = Column(Integer,ForeignKey("clubs.id"),nullable=False)
 
     # ============================================================
-    # THÊM: Tiêu đề hoạt động
+    # TASK 1 - Tiêu đề hoạt động
     # ============================================================
-    title = Column(
-        String(255),
-        nullable=False
-    )
+    title = Column(String(255),nullable=False)
 
     # ============================================================
-    # THÊM: Mô tả
+    # TASK 1 - Mô tả hoạt động
     # ============================================================
-    description = Column(
-        Text,
-        nullable=True
-    )
+    description = Column(Text,nullable=True)
 
     # ============================================================
-    # THÊM: User được giao xử lý
+    # TASK 1 - Người được giao hoạt động
+    # FK -> users.id
+    # Có thể NULL vì hoạt động ban đầu chưa nhất thiết
+    # phải được giao cho ai.
     # ============================================================
-    assignee_id = Column(
-        Integer,
-        ForeignKey("users.id"),
-        nullable=True
-    )
+    assignee_id = Column(IntegerForeignKey("users.id"),nullable=True)
 
     # ============================================================
-    # THÊM: Trạng thái hoạt động
+    # TASK 1 - Workflow status
+    # TODO / IN_PROGRESS / DONE
     # ============================================================
-    status = Column(
-        String(30),
-        nullable=False,
-        default="TODO"
-    )
+    status = Column(String(30),nullable=False,default="TODO")
 
     # ============================================================
-    # THÊM: Độ ưu tiên
+    # TASK 1 - Priority
+    # LOW / MEDIUM / HIGH
     # ============================================================
-    priority = Column(
-        String(30),
-        nullable=False,
-        default="MEDIUM"
-    )
+    priority = Column(String(30),nullable=False,default="MEDIUM")
 
     # ============================================================
-    # THÊM: Hạn xử lý
+    # TASK 1 - Hạn xử lý
     # ============================================================
-    due_date = Column(
-        DateTime,
-        nullable=True
-    )
+    due_date = Column(DateTime,nullable=True)
 
     # ============================================================
-    # THÊM: Ngày tạo
+    # TASK 1 - Thời gian tạo
     # ============================================================
-    created_at = Column(
-        DateTime,
-        default=lambda: datetime.now(timezone.utc)
-    )
+    created_at = Column(DateTime,nullable=False,default=lambda: datetime.now(timezone.utc))
 
-    club = relationship(
-        "Club",
-        back_populates="activities"
-    )
+    # ============================================================
+    # TASK 1 - Quan hệ Activity -> Club
+    # ============================================================
+    club = relationship("Club",back_populates="activities")
 
-    assignee = relationship(
-        "User",
-        back_populates="assigned_activities"
-    )
+    # ============================================================
+    # TASK 1 - Quan hệ Activity -> User assignee
+    # ============================================================
+    assignee = relationship("User",back_populates="assigned_activities")
