@@ -1,35 +1,41 @@
-from pydantic import BaseModel
 from datetime import datetime
+from pydantic import BaseModel, ConfigDict, Field
 
+# ============================================================
+# TASK 1 - Club Base
+# ============================================================
 class ClubBase(BaseModel):
-    # ============================================================
-    # THÊM: Thông tin cơ bản của Club
-    # ============================================================
-    name: str
+    name: str = Field(
+        min_length=1,
+        max_length=255
+    )
     description: str | None = None
+
+# ============================================================
+# TASK 1 - Club Create
+# ============================================================
 class ClubCreate(ClubBase):
     pass
+# ============================================================
+# TASK 1 - Club Update
+# PATCH nên cho phép cập nhật từng trường.
+# ============================================================
 class ClubUpdate(BaseModel):
-    # ============================================================
-    # THÊM: PATCH nên cho phép cập nhật từng trường
-    # ============================================================
-    name: str | None = None
+    name: str | None = Field(
+        default=None,
+        min_length=1,
+        max_length=255
+    )
     description: str | None = None
+
+# ============================================================
+# TASK 1 - Club Response
+# ============================================================
 class ClubResponse(ClubBase):
     id: int
     owner_id: int
     created_at: datetime
-    class Config:
-        from_attributes = True
-class ClubMemberCreate(BaseModel):
-    # ============================================================
-    # THÊM: Owner dùng user_id để thêm thành viên
-    # ============================================================
-    user_id: int
-class ClubMemberResponse(BaseModel):
-    club_id: int
-    user_id: int
-    role: str
-    joined_at: datetime
-    class Config:
-        from_attributes = True
+
+    model_config = ConfigDict(
+        from_attributes=True
+    )
