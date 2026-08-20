@@ -1,78 +1,60 @@
-# from pydantic import BaseModel, EmailStr
-# from datetime import datetime
-# from app.schemas.role import RoleResponse
-
-# class UserBase(BaseModel):
-#     email: EmailStr
-
-# class UserCreate(UserBase):
-#     # Dữ liệu đầu vào khi đăng ký: truyền tên role (VD: "user", "admin")
-#     password: str
-#     role_name: str = "user"  # Mặc định là "user" nếu không truyền vào
-
-# class UserLogin(UserBase):
-#     # Dữ liệu đầu vào khi đăng nhập
-#     password: str
-
-# class UserResponse(UserBase):
-#     # Dữ liệu trả về cho client, TUYỆT ĐỐI KHÔNG trả về mật khẩu
-#     id: int
-#     is_active: bool
-#     # Trả về thông tin role dạng object lồng nhau (nested), không phải chỉ id
-#     role: RoleResponse | None = None
-#     created_at: datetime
-
-#     class Config:
-#         # Pydantic V2 cấu hình từ form_attributes (ở V1 là orm_mode = True)
-#         # Giúp Pydantic có thể đọc dữ liệu trực tiếp từ SQLAlchemy Model object
-#         from_attributes = True
-
-from pydantic import BaseModel, EmailStr
 from datetime import datetime
-from app.schemas.Role import RoleResponse
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
+
+# ============================================================
+# TASK 1 - User Base
+# ============================================================
 class UserBase(BaseModel):
     email: EmailStr
+    full_name: str = Field(
+        min_length=2,
+        max_length=255
+    )
 
+
+# ============================================================
+# TASK 1 - User Create
+# Dùng cho dữ liệu tạo user.
+# Password chỉ tồn tại ở request, không trả về response.
+# ============================================================
 class UserCreate(UserBase):
+    password: str = Field(
+        min_length=6,
+        max_length=128
+    )
+    role: str = "USER"
 
-    # ============================================================
-    # THÊM: Họ tên khi đăng ký
-    # ============================================================
-    full_name: str
 
-    # ============================================================
-    # GIỮ: Password chỉ nhận từ client
-    # Sau đó service sẽ hash trước khi lưu DB
-    # ============================================================
-    password: str
-    # ============================================================
-    # GIỮ: Role mặc định là user
-    # ============================================================
-    role_name: str = "user"
+# ============================================================
+# TASK 1 - User Update
+# Tất cả field đều optional để sau này hỗ trợ PATCH.
+# ============================================================
+class UserUpdate(BaseModel):
+    email: EmailStr | None = None
 
-class UserLogin(UserBase):
+    full_name: str | None = Field(
+        default=None,
+        min_length=2,
+        max_length=255
+    )
+    is_active: bool | None = None
+    role: str | None = None
 
-    # ============================================================
-    # GIỮ: Password dùng để đăng nhập
-    # ============================================================
-    password: str
-
+# ============================================================
+# TASK 1 - User Response
+# Không có password/password_hash.
+# Đây là điểm quan trọng để không làm lộ mật khẩu.
+# ============================================================
 class UserResponse(UserBase):
-
     id: int
-
-    # ============================================================
-    # THÊM: Trả về full_name
-    # ============================================================
-    full_name: str
-
+    role: str
     is_active: bool
-
-    role: RoleResponse | None = None
-
     created_at: datetime
 
-    class Config:
-        # GIỮ: Cho phép Pydantic đọc SQLAlchemy object
-        from_attributes = True
+    # ========================================================
+    # TASK 1 - Pydantic đọc trực tiếp SQLAlchemy Model
+    # ========================================================
+    model_config = ConfigDict(
+        from_attributes=True
+    )
